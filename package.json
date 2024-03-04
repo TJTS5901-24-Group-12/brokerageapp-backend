@@ -1,0 +1,30 @@
+{
+  "name": "brokerageapp-backend",
+  "version": "1.0.0",
+  "description": "Backend API for the demo Brokerage app",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "mocha",
+    "dev": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TJTS5901-24-Group-12/brokerageapp-backend.git"
+  },
+  "author": "TJTS5901 Group 12",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TJTS5901-24-Group-12/brokerageapp-backend/issues"
+  },
+  "homepage": "https://github.com/TJTS5901-24-Group-12/brokerageapp-backend#readme",
+  "dependencies": {
+    "express": "^4.18.3",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "chai": "^5.1.0",
+    "mocha": "^10.3.0",
+    "supertest": "^6.3.4"
+  }
+}
