@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/TJTS5901-24-Group-12/brokerageapp-backend#readme",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.18.3",
     "node-fetch": "^3.3.2"
   },

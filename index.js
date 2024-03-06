@@ -1,8 +1,10 @@
 import express from 'express'
 import bodyParser from 'body-parser'
 import fetch from 'node-fetch'
+import cors from 'cors'
 
 const app = express();
+app.use(cors())
 const port = 3000;
 
 app.use(bodyParser.json());
@@ -12,13 +14,13 @@ let bids = [];
 let offers = [];
 let deals = [];
 
-let currentStockPrice = 0;
+let latestStockPrice = 0;
 
 setInterval(updateStockPrice, 1000 * 60 * 60);
 
 async function updateStockPrice() {
   fetchPrice()
-    .then((price) => { currentStockPrice = price; })
+    .then((price) => { latestStockPrice = price; })
     .catch((error) => { console.error('Error fetching stock data:', error) })
 }
 
@@ -28,7 +30,7 @@ await updateStockPrice()
 app.post('/addBid', (req, res) => {
   const { amount, price } = req.body;
   try {
-    validateTransaction(amount, price, currentStockPrice)
+    validateTransaction(amount, price, latestStockPrice)
     bids.push({ amount, price });
     res.send('Bid added successfully');
   }
@@ -41,7 +43,7 @@ app.post('/addBid', (req, res) => {
 app.post('/addOffer', (req, res) => {
   const { amount, price } = req.body;
   try {
-    validateTransaction(amount, price, currentStockPrice)
+    validateTransaction(amount, price, latestStockPrice)
     offers.push({ amount, price });
     res.send('Offer added successfully');
   }
@@ -53,6 +55,11 @@ app.post('/addOffer', (req, res) => {
 // API endpoint to get bids and offers
 app.get('/getBidsAndOffers', (req, res) => {
   res.json({ bids, offers });
+});
+
+// API endpoint to get the latest stock price
+app.get('/getLatestStockPrice', (req, res) => {
+  res.json(latestStockPrice);
 });
 
 // Start the server
