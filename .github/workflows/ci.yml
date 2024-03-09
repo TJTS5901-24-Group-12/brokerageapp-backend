@@ -10,8 +10,52 @@ on:
       - main
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: lts/*
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Lint
+        run: npm run lint
+
+  test:
+    runs-on: ubuntu-latest
+    needs: lint
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: lts/*
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests with coverage
+        run: npm run test:coverage
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage
+          path: coverage
+
   build:
     runs-on: ubuntu-latest
+    needs: test
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -29,31 +73,3 @@ jobs:
           node index.js &  # Run in the background
           sleep 10         # Adjust the sleep duration as needed
           pkill -f "node index.js" || true  # Kill the background process
-
-  test:
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x]
-        os: [ubuntu-latest]
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-
-      - name: Install dependencies
-        run: |
-          npm install
-          npm install --save-dev cross-env
-
-      - name: Run tests
-        run: |
-          npm run test &  # Run tests in the background
-          sleep 5         # Adjust the sleep duration as needed
-          pkill -f "npm run test" || true  # Kill the background process
