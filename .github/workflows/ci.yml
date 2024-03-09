@@ -14,17 +14,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-      - uses: actions/checkout@v3
+        uses: actions/checkout@v3
 
       - name: Set up Node.js
-      - uses: actions/setup-node@v3
+        uses: actions/setup-node@v3
         with:
           node-version: lts/*
 
       - name: Install dependencies
         run: npm install
 
-      - name: build
+      - name: Build
         run: node index.js
 
   test:
@@ -34,19 +34,21 @@ jobs:
       matrix:
         node-version: [18.x, 20.x]
         os: [ubuntu-latest]
-      fail-fast: false
+    fail-fast: false
 
     steps:
       - name: Checkout repository
-      - uses: actions/checkout@v3
+        uses: actions/checkout@v3
+
       - name: Set up Node.js
-      - uses: actions/setup-node@v3
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
 
       - name: Install dependencies
-      - run: npm install
-      - run: npm install --save-dev cross-env
+        run: |
+          npm install
+          npm install --save-dev cross-env
 
       - name: Run tests
-      - run: npm run test
+        run: npm run test
