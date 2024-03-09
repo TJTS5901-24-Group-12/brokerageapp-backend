@@ -7,9 +7,15 @@ on:
       - completed
 
 jobs:
+  trigger-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Release
+        run: echo "Triggering release"
+  
   release:
     runs-on: ubuntu-latest
-    needs: main
+    needs: trigger-release
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
