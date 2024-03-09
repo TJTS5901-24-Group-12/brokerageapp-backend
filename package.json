@@ -5,7 +5,10 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "lint": "eslint . --ext .js",
+    "pretest": "npm run lint",
     "test": "cross-env NODE_ENV=test mocha",
+    "test:coverage": "cross-env NODE_ENV=test c8 mocha --exit",
     "dev": "node index.js"
   },
   "repository": {
@@ -24,10 +27,17 @@
     "node-fetch": "^3.3.2"
   },
   "devDependencies": {
+    "c8": "^9.1.0",
     "chai": "^5.1.0",
     "cross-env": "^7.0.3",
+    "eslint": "^8.57.0",
     "mocha": "^10.3.0",
     "nock": "^13.5.4",
     "supertest": "^6.3.4"
+  },
+  "c8": {
+    "functions": 40,
+    "lines": 40,
+    "statements": 40
   }
 }
