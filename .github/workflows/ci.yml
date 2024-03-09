@@ -34,7 +34,6 @@ jobs:
       matrix:
         node-version: [18.x, 20.x]
         os: [ubuntu-latest]
-    fail-fast: false
 
     steps:
       - name: Checkout repository
