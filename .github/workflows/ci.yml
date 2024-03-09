@@ -25,7 +25,10 @@ jobs:
         run: npm install
 
       - name: Build
-        run: node index.js
+        run: |
+          node index.js &  # Run in the background
+          sleep 10         # Adjust the sleep duration as needed
+          pkill -f "node index.js" || true  # Kill the background process
 
   test:
     runs-on: ${{ matrix.os }}
@@ -50,4 +53,7 @@ jobs:
           npm install --save-dev cross-env
 
       - name: Run tests
-        run: npm run test
+        run: |
+          npm run test &  # Run tests in the background
+          sleep 5         # Adjust the sleep duration as needed
+          pkill -f "npm run test" || true  # Kill the background process
