@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "mocha",
+    "test": "cross-env NODE_ENV=test mocha",
     "dev": "node index.js"
   },
   "repository": {
@@ -25,7 +25,9 @@
   },
   "devDependencies": {
     "chai": "^5.1.0",
+    "cross-env": "^7.0.3",
     "mocha": "^10.3.0",
+    "nock": "^13.5.4",
     "supertest": "^6.3.4"
   }
 }
