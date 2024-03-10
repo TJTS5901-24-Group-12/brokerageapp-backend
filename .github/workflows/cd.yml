@@ -19,6 +19,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          ref: main  # Specify your main branch here
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -29,4 +31,6 @@ jobs:
         run: npm install
 
       - name: Release
+        env:  # Set the GitHub token here
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}  # Make sure to add the GitHub token in your repository secrets
         run: npx semantic-release
