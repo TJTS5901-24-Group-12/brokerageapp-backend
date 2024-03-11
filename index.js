@@ -37,10 +37,13 @@ await updateStockPrice()
 // API endpoint to add a bid
 app.post('/addBid', (req, res) => {
   const { amount, price } = req.body;
+  const amountLeft = amount
+  const id = bids.length
   try {
     validateTransaction(amount, price, latestStockPrice)
-    bids.push({ amount, price });
-    res.send('Bid added successfully');
+    bids.push({ id, amount, price, amountLeft })
+    attemptDeal(bids, offers)
+    res.send('Bid added successfully')
   }
   catch (e) {
     res.send('Bid unsuccessful: ' + e)
@@ -49,11 +52,15 @@ app.post('/addBid', (req, res) => {
 
 // API endpoint to add an offer
 app.post('/addOffer', (req, res) => {
-  const { amount, price } = req.body;
+  const { amount, price } = req.body
+  const amountLeft = amount
+  const id = offers.length
   try {
     validateTransaction(amount, price, latestStockPrice)
-    offers.push({ amount, price });
-    res.send('Offer added successfully');
+    offers.push({ id, amount, price, amountLeft })
+    attemptDeal(bids, offers)
+    res.send('Offer added successfully')
+    
   }
   catch (e) {
     res.send('Offer unsuccessful: ' + e)
@@ -61,8 +68,8 @@ app.post('/addOffer', (req, res) => {
 });
 
 // API endpoint to get bids and offers
-app.get('/getBidsAndOffers', (req, res) => {
-  res.json({ bids, offers });
+app.get('/getBidsOffersAndDeals', (req, res) => {
+  res.json({ bids, offers, deals });
 });
 
 // API endpoint to get the latest stock price
@@ -78,7 +85,10 @@ app.listen(port, () => {
 function fetchPrice() {
   const result = fetch('https://api.marketdata.app/v1/stocks/quotes/AAPL/')
     .then(response => response.json())
-    .then((data) => { return Number.parseFloat(data.last) })
+    .then((data) => { 
+      console.log('Fetched new price for AAPL: ' + Number.parseFloat(data.last))
+      return Number.parseFloat(data.last)
+    })
     .catch((error) => { throw new Error('Error fetching data:', error) })
 
   return result
@@ -103,6 +113,42 @@ function validateTransaction(amount, price, lastPrice) {
     throw new Error('Price must be +-10% of the last traded price!')
 
   return true
+}
+
+function attemptDeal(bids, offers) {
+  if (bids.length === 0 || offers.length === 0) {
+    return
+  }
+
+  const sortArrays = (array) => array.sort((a, b) => {
+    if (a.price !== b.price) {
+      return (array === bids) ? b.price - a.price : a.price - b.price;
+    }
+    return a.id - b.id;
+  });
+
+  bids = sortArrays(bids)
+  offers = sortArrays(offers)
+
+  for (let bid of bids) {
+    if (bid.amountLeft === 0) continue
+
+    for (let offer of offers) {
+      if (offer.price <= bid.price && offer.amountLeft > 0) {
+        const dealAmount = Math.min(bid.amountLeft, offer.amountLeft);
+        bid.amountLeft -= dealAmount;
+        offer.amountLeft -= dealAmount;
+        deals.push({ bidId: bid.id, offerId: offer.id, amountSold: dealAmount,
+        price: offer.price })
+
+        if (bid.amountLeft === 0) break
+      }
+    }
+  }
+
+  const sortArraysBack = (array) => array.sort((a,b) => { return a.id - b.id })
+  bids = sortArraysBack(bids)
+  offers = sortArraysBack(offers)
 }
 
 export default app
