@@ -138,8 +138,9 @@ function attemptDeal(bids, offers) {
         const dealAmount = Math.min(bid.amountLeft, offer.amountLeft);
         bid.amountLeft -= dealAmount;
         offer.amountLeft -= dealAmount;
+        const time = getCurrentDateTime()
         deals.push({ bidId: bid.id, offerId: offer.id, amountSold: dealAmount,
-        price: offer.price })
+        price: offer.price, timeOfDeal: time })
 
         if (bid.amountLeft === 0) break
       }
@@ -149,6 +150,18 @@ function attemptDeal(bids, offers) {
   const sortArraysBack = (array) => array.sort((a,b) => { return a.id - b.id })
   bids = sortArraysBack(bids)
   offers = sortArraysBack(offers)
+}
+
+function getCurrentDateTime() {
+  const currentDate = new Date();
+  const year = currentDate.getFullYear();
+  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+  const day = String(currentDate.getDate()).padStart(2, '0');
+  const hours = String(currentDate.getHours()).padStart(2, '0');
+  const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+  const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
 export default app
