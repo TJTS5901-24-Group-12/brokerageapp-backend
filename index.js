@@ -77,6 +77,15 @@ app.get('/getLatestStockPrice', (req, res) => {
   res.json(latestStockPrice);
 });
 
+// Resets all transactions
+app.post('/reset', (req, res) => {
+  bids = [];
+  offers = [];
+  deals = [];
+
+  res.send('Reset successful')
+})
+
 // Start the server
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
@@ -95,11 +104,10 @@ function fetchPrice() {
 }
 
 function validateTransaction(amount, price, lastPrice) {
-  console.log(price)
-  console.log(lastPrice)
   // These are the maximum and minimum amounts of what the user could give as input
-  const maxPrice = lastPrice * 1.1
-  const minPrice = lastPrice * 0.9
+  const maxPrice = (lastPrice * 1.1)?.toFixed(2) ?? lastPrice * 1.1
+  const minPrice = (lastPrice * 0.9)?.toFixed(2) ?? lastPrice * 0.9
+  const inputPrice = price?.toFixed(2) ?? price
 
   // Validates that amount is given
   if (!amount)
@@ -109,7 +117,7 @@ function validateTransaction(amount, price, lastPrice) {
     throw new Error('Quantity cannot be a float.')
 
   // Validate that price cannot go higher or lower than max price
-  if (!price || price < minPrice || price > maxPrice)
+  if (!inputPrice || inputPrice < minPrice || inputPrice > maxPrice)
     throw new Error('Price must be +-10% of the last traded price!')
 
   return true
